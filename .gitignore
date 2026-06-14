@@ -1,0 +1,6 @@
+pip
+__pycache__
+db.sqlite3
+.venv
+.env.example
+__init__.py
