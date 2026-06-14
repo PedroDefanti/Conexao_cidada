@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{% block title %}Conexão Cidadã{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="{% url 'index' %}" class="logo-container">
+      <span class="logo-text">🤝 Conexão Cidadã</span>
+    </a>
+    <div class="nav-links">
+      {% if user.is_authenticated %}
+        <a href="{% url 'perfil' %}" class="nav-user">Olá, {{ user.first_name|default:user.username }} 👋</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn-outline">Sair</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn-outline">Entrar</a>
+        <a href="{% url 'cadastro' %}" class="btn-filled">Cadastrar</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- ── MENSAGENS DJANGO ── -->
+  {% if messages %}
+  <ul class="messages-list">
+    {% for message in messages %}
+    <li class="msg msg-{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <!-- ── CONTEÚDO ── -->
+  {% block content %}{% endblock %}
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <p>&copy; 2026 Conexão Cidadã. Todos os direitos reservados.</p>
+  </footer>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

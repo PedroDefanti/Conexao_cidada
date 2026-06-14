@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% block title %}Meu Perfil - Conexão Cidadã{% endblock %}
+
+{% block content %}
+<div class="perfil-container">
+
+  <!-- Card do usuário -->
+  <div class="perfil-card">
+    <div class="perfil-avatar">👤</div>
+    <div class="perfil-nome">{{ user.first_name|default:user.username }}</div>
+    <div class="perfil-email">{{ user.email }}</div>
+    <div class="perfil-tipo">
+      {% if user.tipo == 'ong' %}
+        <span class="tag tag-blue">🏢 ONG — {{ user.nome_organizacao }}</span>
+      {% else %}
+        <span class="tag tag-green">🙋 Voluntário</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Inscrições -->
+  <div class="perfil-card">
+    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; margin-bottom:1.2rem;">
+      📋 Minhas Inscrições ({{ inscricoes.count }})
+    </h3>
+
+    {% for ins in inscricoes %}
+    <div class="inscricao-item">
+      <div>
+        <div style="font-weight:600; font-size:.9rem;">{{ ins.ong.emoji }} {{ ins.ong.nome }}</div>
+        <div style="font-size:.78rem; color:var(--text-muted); margin-top:.2rem;">
+          {{ ins.ong.localizacao }} · {{ ins.criada_em|date:"d/m/Y" }}
+        </div>
+      </div>
+      <span class="badge-{{ ins.status }}">
+        {% if ins.status == 'pendente' %}⏳ Pendente
+        {% elif ins.status == 'aprovada' %}✅ Aprovada
+        {% else %}❌ Rejeitada{% endif %}
+      </span>
+    </div>
+    {% empty %}
+    <p style="color:var(--text-muted); font-size:.9rem;">
+      Você ainda não se inscreveu em nenhuma ONG.
+      <a href="{% url 'index' %}" style="color:var(--green); text-decoration:none; font-weight:500;">Explorar ONGs →</a>
+    </p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

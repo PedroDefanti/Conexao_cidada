@@ -1,0 +1,119 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Conexão Cidadã - Início{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <h1>Descubra causas que <span>precisam de você</span></h1>
+  <p>Explore organizações, encontre projetos ideais e escolha como fazer a diferença na sua comunidade.</p>
+</header>
+
+<!-- ── BUSCA ── -->
+<div class="search-bar">
+  <div class="search-wrap">
+    <input type="text" placeholder="Buscar por ONGs ou causas..." id="search-input" autocomplete="off" maxlength="100">
+    <button type="button" id="btn-buscar">Buscar</button>
+  </div>
+</div>
+
+<!-- ── FILTROS ── -->
+<div class="filters">
+  <button class="filter-chip active" data-filter="Todas">Todas</button>
+  {% for cat in categorias %}
+  <button class="filter-chip" data-filter="{{ cat.nome }}">{{ cat.nome }}</button>
+  {% endfor %}
+</div>
+
+<!-- ── GRID DE ONGS ── -->
+<section class="ongs">
+  <h2 class="section-title">Organizações Disponíveis</h2>
+  <div class="ong-grid" id="ong-grid">
+    {% for ong in ongs %}
+    <div class="ong-card" data-category="{{ ong.categorias.first.nome|default:'' }}" data-name="{{ ong.nome|lower }}" data-desc="{{ ong.descricao|lower }}">
+      <div class="card-header">
+        <div class="card-avatar av-green">{{ ong.emoji }}</div>
+        <div>
+          <div class="card-title">{{ ong.nome }}</div>
+          <div class="card-location">{{ ong.localizacao }}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">{{ ong.descricao }}</p>
+        <div class="tags">
+          {% for cat in ong.categorias.all %}
+            <span class="tag tag-green">{{ cat.nome }}</span>
+          {% endfor %}
+          {% if ong.urgente %}<span class="tag tag-red">Urgente</span>{% endif %}
+        </div>
+      </div>
+      <div class="card-footer">
+        {% if user.is_authenticated %}
+          <a href="{% url 'inscricao' ong.pk %}" class="btn-inscricao">Selecionar</a>
+        {% else %}
+          <a href="{% url 'login' %}?next={% url 'inscricao' ong.pk %}" class="btn-inscricao">Selecionar</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:2rem 0;">Nenhuma ONG cadastrada ainda.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ── COMO FUNCIONA ── -->
+<section class="como">
+  <h2>Como Funciona?</h2>
+  <p>Siga os passos simples para começar a transformar realidades</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Crie sua Conta</div>
+      <div class="step-desc">Registre-se como voluntário ou adicione a sua ONG ao ecossistema.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Escolha uma Causa</div>
+      <div class="step-desc">Explore e filtre os projetos que mais combinam com os seus valores.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Faça a Diferença</div>
+      <div class="step-desc">Confirme a sua disponibilidade e envie os seus dados diretamente.</div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // ── Filtros por chip ──────────────────────────────────────────────────────
+  const chips   = document.querySelectorAll('.filter-chip');
+  const cards   = document.querySelectorAll('.ong-card');
+
+  function applyFilters() {
+    const query  = document.getElementById('search-input').value.trim().toLowerCase();
+    const active = document.querySelector('.filter-chip.active').dataset.filter;
+
+    cards.forEach(card => {
+      const matchCat    = active === 'Todas' || card.dataset.category === active;
+      const matchSearch = !query || card.dataset.name.includes(query) || card.dataset.desc.includes(query);
+      card.style.display = (matchCat && matchSearch) ? 'flex' : 'none';
+    });
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      applyFilters();
+    });
+  });
+
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('btn-buscar').addEventListener('click', applyFilters);
+</script>
+{% endblock %}

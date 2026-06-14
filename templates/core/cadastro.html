@@ -1,0 +1,95 @@
+{% extends 'core/base.html' %}
+{% block title %}Cadastro - Conexão Cidadã{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="login-card" style="max-width:480px;">
+    <div class="login-header">
+      <h2>Criar Conta</h2>
+      <p>Junte-se a quem faz a diferença</p>
+    </div>
+
+    <!-- Abas -->
+    <div class="tabs">
+      <button class="tab-btn {% if tipo == 'voluntario' or not tipo %}active{% endif %}" id="tab-vol" type="button">
+        🙋 Voluntário
+      </button>
+      <button class="tab-btn {% if tipo == 'ong' %}active{% endif %}" id="tab-ong" type="button">
+        🏢 ONG
+      </button>
+    </div>
+
+    <!-- Formulário Voluntário -->
+    <div id="form-vol" {% if tipo == 'ong' %}style="display:none"{% endif %}>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="tipo_cadastro" value="voluntario">
+
+        {% if form_vol.non_field_errors %}
+        <ul class="errorlist non-field-errors">
+          {% for e in form_vol.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+
+        {% for field in form_vol %}
+        <div class="input-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-login">Criar conta como voluntário</button>
+      </form>
+    </div>
+
+    <!-- Formulário ONG -->
+    <div id="form-ong" {% if tipo != 'ong' %}style="display:none"{% endif %}>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="tipo_cadastro" value="ong">
+
+        {% if form_ong.non_field_errors %}
+        <ul class="errorlist non-field-errors">
+          {% for e in form_ong.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+
+        {% for field in form_ong %}
+        <div class="input-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-login">Cadastrar ONG</button>
+      </form>
+    </div>
+
+    <div class="login-footer">
+      Já tem uma conta? <a href="{% url 'login' %}">Entrar</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const tabVol = document.getElementById('tab-vol');
+  const tabOng = document.getElementById('tab-ong');
+  const formVol = document.getElementById('form-vol');
+  const formOng = document.getElementById('form-ong');
+
+  tabVol.addEventListener('click', () => {
+    tabVol.classList.add('active'); tabOng.classList.remove('active');
+    formVol.style.display = ''; formOng.style.display = 'none';
+  });
+  tabOng.addEventListener('click', () => {
+    tabOng.classList.add('active'); tabVol.classList.remove('active');
+    formOng.style.display = ''; formVol.style.display = 'none';
+  });
+</script>
+{% endblock %}

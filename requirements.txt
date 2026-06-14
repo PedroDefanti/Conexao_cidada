@@ -1,0 +1,9 @@
+# ─── Core ────────────────────────────────────────────────
+Django>=4.2,<6.1          # framework principal
+bleach>=6.0               # sanitização de inputs (anti-XSS)
+Pillow>=10.0              # suporte a imagens (upload de avatares, etc.)
+
+# ─── Produção (opcional, descomente quando for hospedar) ─
+# gunicorn>=21.0          # servidor WSGI para produção
+# psycopg2-binary>=2.9    # banco PostgreSQL (substitui o SQLite)
+# python-decouple>=3.8    # leitura de variáveis .env
