@@ -1,0 +1,100 @@
+{% extends 'core/base.html' %}
+{% block title %}Doações - Conexão Cidadã{% endblock %}
+
+{% block content %}
+
+<header class="hero">
+  <h1>O que as ONGs <span>precisam agora</span></h1>
+  <p>Veja as necessidades de doação das organizações e contribua com o que puder.</p>
+</header>
+
+<!-- Filtros por tipo -->
+<div class="filters">
+  <a href="{% url 'doacoes' %}" class="filter-chip {% if not tipo_filtro %}active{% endif %}">Todos</a>
+  {% for valor, label in tipos %}
+    <a href="{% url 'doacoes' %}?tipo={{ valor }}"
+       class="filter-chip {% if tipo_filtro == valor %}active{% endif %}">
+      {{ label }}
+    </a>
+  {% endfor %}
+</div>
+
+<!-- Botão publicar (só para ONGs) -->
+{% if user.is_authenticated and user.tipo == 'ong' %}
+<div style="text-align:center; margin-bottom:2rem;">
+  <a href="{% url 'publicar_doacao' %}" class="btn-filled">+ Publicar necessidade de doação</a>
+</div>
+{% endif %}
+
+<section class="ongs">
+  <h2 class="section-title">
+    Necessidades de Doação
+    {% if tipo_filtro %}
+      <span style="font-size:.85rem; font-weight:400; color:var(--text-muted);">— Filtrando por: {{ tipo_filtro }}</span>
+    {% endif %}
+  </h2>
+  <div class="ong-grid">
+    {% for d in doacoes %}
+    <div class="ong-card">
+      <div class="card-header">
+        <div class="card-avatar av-amber">🎁</div>
+        <div>
+          <a href="{% url 'detalhe_ong' d.ong.pk %}" style="text-decoration:none; color:inherit;">
+            <div class="card-title">{{ d.ong.nome }}</div>
+          </a>
+          <div class="card-location">{{ d.ong.localizacao }}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="margin-bottom:.6rem;">
+          <span class="tag tag-amber">{{ d.get_tipo_display }}</span>
+          {% if d.urgente %}<span class="tag tag-red">🔴 Urgente</span>{% endif %}
+        </div>
+        <p class="card-desc">{{ d.descricao }}</p>
+        <p style="font-size:.75rem; color:var(--text-muted); margin-top:.5rem;">
+          Publicado em {{ d.criada_em|date:"d/m/Y" }}
+        </p>
+      </div>
+      <div class="card-footer" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+        {% if user.is_authenticated %}
+          {% if user.tipo == 'ong' and ong_do_usuario and d.ong == ong_do_usuario %}
+            <!-- ONG pode encerrar a própria doação -->
+            <form method="post" action="{% url 'toggle_doacao' d.pk %}" style="flex:1;">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="doacoes">
+              <button type="submit" class="btn-outline" style="width:100%; font-size:.82rem;">
+                ✅ Encerrar (já recebemos)
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'inscricao' d.ong.pk %}" class="btn-inscricao" style="flex:1;">Quero ajudar</a>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'login' %}?next={% url 'doacoes' %}" class="btn-inscricao" style="flex:1;">Quero ajudar</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <p style="color:var(--text-muted); text-align:center; grid-column:1/-1; padding:2rem 0;">
+      Nenhuma necessidade de doação publicada ainda.
+    </p>
+    {% endfor %}
+  </div>
+
+  <!-- Paginação -->
+  {% if doacoes.has_other_pages %}
+  <div style="display:flex; justify-content:center; gap:.5rem; margin-top:2rem; flex-wrap:wrap;">
+    {% if doacoes.has_previous %}
+      <a href="?{% if tipo_filtro %}tipo={{ tipo_filtro }}&{% endif %}page={{ doacoes.previous_page_number }}" class="btn-outline" style="padding:.5rem 1.2rem;">← Anterior</a>
+    {% endif %}
+    <span style="padding:.5rem 1rem; font-size:.85rem; color:var(--text-muted); align-self:center;">
+      Página {{ doacoes.number }} de {{ doacoes.paginator.num_pages }}
+    </span>
+    {% if doacoes.has_next %}
+      <a href="?{% if tipo_filtro %}tipo={{ tipo_filtro }}&{% endif %}page={{ doacoes.next_page_number }}" class="btn-outline" style="padding:.5rem 1.2rem;">Próxima →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+
+{% endblock %}

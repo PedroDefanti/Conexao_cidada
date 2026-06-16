@@ -1,15 +1,74 @@
 {% extends 'core/base.html' %}
 {% load static %}
-
 {% block title %}Conexão Cidadã - Início{% endblock %}
 
 {% block content %}
 
 <!-- ── HERO ── -->
 <header class="hero">
-  <h1>Descubra causas que <span>precisam de você</span></h1>
-  <p>Explore organizações, encontre projetos ideais e escolha como fazer a diferença na sua comunidade.</p>
+  <div class="hero-badge">🌱 Plataforma de voluntariado</div>
+  {% if user.is_authenticated %}
+    {% if user.tipo == 'ong' %}
+      <h1>Bem-vinda, <span>{{ user.nome_organizacao|default:user.email }}</span> 🏢</h1>
+      <p>Publique suas necessidades e encontre voluntários dispostos a ajudar a sua causa.</p>
+      <div class="hero-ctas">
+        <a href="{% url 'publicar_doacao' %}" class="btn-filled" style="padding:.7rem 1.8rem; font-size:1rem;">+ Publicar necessidade de doação</a>
+        <a href="{% url 'gerenciar_inscricoes' %}" class="btn-outline" style="padding:.7rem 1.8rem; font-size:1rem;">👥 Inscrições</a>
+        <a href="{% url 'perfil' %}" class="btn-outline" style="padding:.7rem 1.8rem; font-size:1rem;">Meu perfil</a>
+      </div>
+    {% else %}
+      <h1>Olá, <span>{{ user.first_name|default:user.username }}</span> 👋</h1>
+      <p>Explore organizações, encontre projetos ideais e escolha como fazer a diferença na sua comunidade.</p>
+      <div class="hero-ctas">
+        <a href="{% url 'doacoes' %}" class="btn-filled" style="padding:.7rem 1.8rem; font-size:1rem;">🎁 Ver doações</a>
+        <a href="{% url 'perfil' %}" class="btn-outline" style="padding:.7rem 1.8rem; font-size:1rem;">Minhas inscrições</a>
+      </div>
+    {% endif %}
+  {% else %}
+    <h1>Descubra causas que <span>precisam de você</span></h1>
+    <p>Conectamos voluntários apaixonados a organizações que transformam realidades. Sua hora, seu impacto.</p>
+    <div class="hero-ctas">
+      <a href="{% url 'cadastro' %}" class="btn-filled" style="padding:.7rem 1.8rem; font-size:1rem;">Começar agora</a>
+      <a href="{% url 'login' %}" class="btn-outline" style="padding:.7rem 1.8rem; font-size:1rem;">Já tenho conta</a>
+    </div>
+  {% endif %}
 </header>
+
+<!-- ── FRASES MOTIVACIONAIS ── -->
+<section class="frases-section">
+  <div class="frases-track" id="frases-track">
+    <div class="frase-item">"A diferença entre o que fazemos e o que somos capazes de fazer resolveria a maioria dos problemas do mundo." — Gandhi</div>
+    <div class="frase-item">"Ninguém pode fazer tudo, mas todos podem fazer algo." — Theodore Roosevelt</div>
+    <div class="frase-item">"O voluntário não é alguém sem pagamento — é alguém para quem o pagamento não é suficiente." — Robert Flaherty</div>
+    <div class="frase-item">"Seja a mudança que você quer ver no mundo." — Gandhi</div>
+    <div class="frase-item">"Uma vela não perde nada ao acender outra vela." — James Keller</div>
+    <div class="frase-item">"O serviço aos outros é o aluguel que você paga por sua sala aqui na Terra." — Muhammad Ali</div>
+    <div class="frase-item">"A diferença entre o que fazemos e o que somos capazes de fazer resolveria a maioria dos problemas do mundo." — Gandhi</div>
+    <div class="frase-item">"Ninguém pode fazer tudo, mas todos podem fazer algo." — Theodore Roosevelt</div>
+  </div>
+</section>
+
+<!-- ── NÚMEROS DE IMPACTO ── -->
+<section class="impacto">
+  <div class="impacto-grid">
+    <div class="impacto-item">
+      <div class="impacto-num">{{ total_ongs }}+</div>
+      <div class="impacto-label">ONGs parceiras</div>
+    </div>
+    <div class="impacto-item">
+      <div class="impacto-num">{{ categorias.count }}</div>
+      <div class="impacto-label">Categorias de causas</div>
+    </div>
+    <div class="impacto-item">
+      <div class="impacto-num">100%</div>
+      <div class="impacto-label">Gratuito</div>
+    </div>
+    <div class="impacto-item">
+      <div class="impacto-num">∞</div>
+      <div class="impacto-label">Impacto possível</div>
+    </div>
+  </div>
+</section>
 
 <!-- ── BUSCA ── -->
 <div class="search-bar">
@@ -36,8 +95,10 @@
       <div class="card-header">
         <div class="card-avatar av-green">{{ ong.emoji }}</div>
         <div>
-          <div class="card-title">{{ ong.nome }}</div>
-          <div class="card-location">{{ ong.localizacao }}</div>
+          <a href="{% url 'detalhe_ong' ong.pk %}" style="text-decoration:none; color:inherit;">
+            <div class="card-title">{{ ong.nome }}</div>
+          </a>
+          <div class="card-location">📍 {{ ong.localizacao }}</div>
         </div>
       </div>
       <div class="card-body">
@@ -46,14 +107,19 @@
           {% for cat in ong.categorias.all %}
             <span class="tag tag-green">{{ cat.nome }}</span>
           {% endfor %}
-          {% if ong.urgente %}<span class="tag tag-red">Urgente</span>{% endif %}
+          {% if ong.urgente %}<span class="tag tag-red">🔴 Urgente</span>{% endif %}
         </div>
       </div>
-      <div class="card-footer">
+      <div class="card-footer" style="display:flex; gap:.5rem; flex-wrap:wrap;">
+        <a href="{% url 'detalhe_ong' ong.pk %}" class="btn-outline" style="flex:1; text-align:center; font-size:.82rem; padding:.45rem .6rem;">Ver detalhes</a>
         {% if user.is_authenticated %}
-          <a href="{% url 'inscricao' ong.pk %}" class="btn-inscricao">Selecionar</a>
+          {% if user.tipo == 'voluntario' %}
+            <a href="{% url 'inscricao' ong.pk %}" class="btn-inscricao" style="flex:2;">Quero me voluntariar</a>
+          {% else %}
+            <span class="btn-inscricao" style="flex:2; opacity:.5; cursor:default; background:var(--border); text-align:center;">Sua ONG está aqui</span>
+          {% endif %}
         {% else %}
-          <a href="{% url 'login' %}?next={% url 'inscricao' ong.pk %}" class="btn-inscricao">Selecionar</a>
+          <a href="{% url 'login' %}?next={% url 'inscricao' ong.pk %}" class="btn-inscricao" style="flex:2;">Entrar para se inscrever</a>
         {% endif %}
       </div>
     </div>
@@ -61,43 +127,61 @@
     <p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:2rem 0;">Nenhuma ONG cadastrada ainda.</p>
     {% endfor %}
   </div>
+
+  <!-- Paginação -->
+  {% if ongs.has_other_pages %}
+  <div style="display:flex; justify-content:center; gap:.5rem; margin-top:2rem; flex-wrap:wrap;">
+    {% if ongs.has_previous %}
+      <a href="?page={{ ongs.previous_page_number }}" class="btn-outline" style="padding:.5rem 1.2rem;">← Anterior</a>
+    {% endif %}
+    {% for num in ongs.paginator.page_range %}
+      {% if ongs.number == num %}
+        <span class="btn-filled" style="padding:.5rem 1.2rem; cursor:default;">{{ num }}</span>
+      {% elif num > ongs.number|add:'-3' and num < ongs.number|add:'3' %}
+        <a href="?page={{ num }}" class="btn-outline" style="padding:.5rem 1.2rem;">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if ongs.has_next %}
+      <a href="?page={{ ongs.next_page_number }}" class="btn-outline" style="padding:.5rem 1.2rem;">Próxima →</a>
+    {% endif %}
+  </div>
+  {% endif %}
 </section>
 
-<!-- ── COMO FUNCIONA ── -->
-<section class="como">
-  <h2>Como Funciona?</h2>
-  <p>Siga os passos simples para começar a transformar realidades</p>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-title">Crie sua Conta</div>
-      <div class="step-desc">Registre-se como voluntário ou adicione a sua ONG ao ecossistema.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-title">Escolha uma Causa</div>
-      <div class="step-desc">Explore e filtre os projetos que mais combinam com os seus valores.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-title">Faça a Diferença</div>
-      <div class="step-desc">Confirme a sua disponibilidade e envie os seus dados diretamente.</div>
-    </div>
+<!-- ── ONGS PARCEIRAS ── -->
+<section class="parceiras">
+  <h2 class="section-title">🤝 ONGs Parceiras</h2>
+  <p class="parceiras-sub">Organizações que confiam na nossa plataforma para encontrar voluntários</p>
+  <div class="parceiras-grid">
+    <div class="parceira-card"><div class="parceira-emoji">🌊</div><div class="parceira-nome">Mar Limpo Brasil</div><div class="parceira-causa">Limpeza de praias e oceanos</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">📖</div><div class="parceira-nome">Leitura Para Todos</div><div class="parceira-causa">Alfabetização de adultos</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">🐕</div><div class="parceira-nome">Patas Unidas</div><div class="parceira-causa">Resgate e adoção animal</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">🌻</div><div class="parceira-nome">Horta Comunitária</div><div class="parceira-causa">Segurança alimentar urbana</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">👴</div><div class="parceira-nome">Viver Melhor</div><div class="parceira-causa">Apoio a idosos em vulnerabilidade</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">💻</div><div class="parceira-nome">Código Livre</div><div class="parceira-causa">Inclusão digital em periferias</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">🎵</div><div class="parceira-nome">Sons da Favela</div><div class="parceira-causa">Música e cultura para jovens</div></div>
+    <div class="parceira-card"><div class="parceira-emoji">🏗️</div><div class="parceira-nome">Reconstruir</div><div class="parceira-causa">Moradia para famílias em risco</div></div>
   </div>
 </section>
+
+{% if not user.is_authenticated %}
+<section class="cta-final">
+  <h2>Pronto para fazer a diferença?</h2>
+  <p>Junte-se a milhares de voluntários que já estão transformando o Brasil</p>
+  <a href="{% url 'cadastro' %}" class="btn-filled" style="padding:.75rem 2rem; font-size:1rem;">Criar conta gratuita →</a>
+</section>
+{% endif %}
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  // ── Filtros por chip ──────────────────────────────────────────────────────
-  const chips   = document.querySelectorAll('.filter-chip');
-  const cards   = document.querySelectorAll('.ong-card');
+  const chips = document.querySelectorAll('.filter-chip');
+  const cards = document.querySelectorAll('.ong-card');
 
   function applyFilters() {
     const query  = document.getElementById('search-input').value.trim().toLowerCase();
     const active = document.querySelector('.filter-chip.active').dataset.filter;
-
     cards.forEach(card => {
       const matchCat    = active === 'Todas' || card.dataset.category === active;
       const matchSearch = !query || card.dataset.name.includes(query) || card.dataset.desc.includes(query);
@@ -115,5 +199,14 @@
 
   document.getElementById('search-input').addEventListener('input', applyFilters);
   document.getElementById('btn-buscar').addEventListener('click', applyFilters);
+
+  // Carrossel de frases
+  const track = document.getElementById('frases-track');
+  let pos = 0;
+  setInterval(() => {
+    pos -= 0.4;
+    if (Math.abs(pos) >= track.scrollWidth / 2) pos = 0;
+    track.style.transform = `translateX(${pos}px)`;
+  }, 16);
 </script>
 {% endblock %}

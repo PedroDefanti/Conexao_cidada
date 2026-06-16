@@ -12,14 +12,21 @@
 </head>
 <body>
 
-  <!-- ── NAV ── -->
   <nav>
     <a href="{% url 'index' %}" class="logo-container">
       <span class="logo-text">🤝 Conexão Cidadã</span>
     </a>
     <div class="nav-links">
       {% if user.is_authenticated %}
-        <a href="{% url 'perfil' %}" class="nav-user">Olá, {{ user.first_name|default:user.username }} 👋</a>
+        <a href="{% url 'doacoes' %}" class="btn-outline">🎁 Doações</a>
+        <a href="{% url 'perfil' %}" class="nav-user">
+          {% if user.foto_perfil %}
+            <img src="{{ user.foto_perfil.url }}" class="nav-avatar" alt="foto">
+          {% else %}
+            <span class="nav-avatar-placeholder">{{ user.nome_exibicao|first|upper }}</span>
+          {% endif %}
+          {% if user.tipo == 'ong' %}{{ user.email }}{% else %}Olá, {{ user.first_name|default:user.username }} 👋{% endif %}
+        </a>
         <form method="post" action="{% url 'logout' %}" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btn-outline">Sair</button>
@@ -31,7 +38,6 @@
     </div>
   </nav>
 
-  <!-- ── MENSAGENS DJANGO ── -->
   {% if messages %}
   <ul class="messages-list">
     {% for message in messages %}
@@ -40,10 +46,8 @@
   </ul>
   {% endif %}
 
-  <!-- ── CONTEÚDO ── -->
   {% block content %}{% endblock %}
 
-  <!-- ── FOOTER ── -->
   <footer>
     <p>&copy; 2026 Conexão Cidadã. Todos os direitos reservados.</p>
   </footer>

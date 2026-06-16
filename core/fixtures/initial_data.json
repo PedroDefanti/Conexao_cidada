@@ -1,0 +1,245 @@
+[
+  {
+    "model": "core.categoria",
+    "pk": 1,
+    "fields": { "nome": "Meio Ambiente", "slug": "meio-ambiente", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 2,
+    "fields": { "nome": "Educação", "slug": "educacao", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 3,
+    "fields": { "nome": "Animais", "slug": "animais", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 4,
+    "fields": { "nome": "Alimentação", "slug": "alimentacao", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 5,
+    "fields": { "nome": "Idosos", "slug": "idosos", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 6,
+    "fields": { "nome": "Tecnologia", "slug": "tecnologia", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 7,
+    "fields": { "nome": "Cultura e Arte", "slug": "cultura-e-arte", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 8,
+    "fields": { "nome": "Moradia", "slug": "moradia", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 9,
+    "fields": { "nome": "Saúde", "slug": "saude", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 10,
+    "fields": { "nome": "Crianças e Jovens", "slug": "criancas-e-jovens", "criada_em": "2026-01-01T00:00:00Z" }
+  },
+
+  {
+    "model": "core.ong",
+    "pk": 1,
+    "fields": {
+      "responsavel": null,
+      "nome": "Mar Limpo Brasil",
+      "descricao": "Organizamos mutirões de limpeza em praias, rios e manguezais de todo o litoral brasileiro. Nossos voluntários ajudam a coletar resíduos, conscientizar banhistas e monitorar a qualidade da água. Acreditamos que pequenas ações coletivas geram grandes transformações no ecossistema marinho.",
+      "localizacao": "Rio de Janeiro, RJ",
+      "categorias": [1],
+      "emoji": "🌊",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-01-10T10:00:00Z",
+      "atualizada_em": "2026-01-10T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 2,
+    "fields": {
+      "responsavel": null,
+      "nome": "Leitura Para Todos",
+      "descricao": "Promovemos a alfabetização de adultos e jovens em situação de vulnerabilidade social. Nossos voluntários atuam como tutores em encontros semanais presenciais e online. Já ajudamos mais de 3.000 pessoas a conquistar a leitura e a escrita, abrindo portas para novas oportunidades de trabalho e cidadania.",
+      "localizacao": "São Paulo, SP",
+      "categorias": [2, 10],
+      "emoji": "📖",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-01-12T10:00:00Z",
+      "atualizada_em": "2026-01-12T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 3,
+    "fields": {
+      "responsavel": null,
+      "nome": "Patas Unidas",
+      "descricao": "Resgatamos, tratamos e buscamos lares para animais abandonados em Belo Horizonte e região. Precisamos de voluntários para transporte, lar temporário, socialização dos animais e participação em feiras de adoção. Cada animal adotado é uma vida salva.",
+      "localizacao": "Belo Horizonte, MG",
+      "categorias": [3],
+      "emoji": "🐾",
+      "ativa": true,
+      "urgente": true,
+      "criada_em": "2026-01-15T10:00:00Z",
+      "atualizada_em": "2026-01-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 4,
+    "fields": {
+      "responsavel": null,
+      "nome": "Horta Comunitária",
+      "descricao": "Cultivamos hortas urbanas em comunidades de periferia, garantindo acesso a alimentos saudáveis e orgânicos para famílias em insegurança alimentar. Voluntários auxiliam no plantio, colheita, manutenção e em oficinas de culinária sustentável. Venha colocar as mãos na terra!",
+      "localizacao": "Curitiba, PR",
+      "categorias": [4, 1],
+      "emoji": "🌻",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-01-18T10:00:00Z",
+      "atualizada_em": "2026-01-18T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 5,
+    "fields": {
+      "responsavel": null,
+      "nome": "Viver Melhor",
+      "descricao": "Apoiamos idosos em situação de vulnerabilidade social e solidão, oferecendo companhia, transporte a consultas médicas, auxílio em tarefas domésticas e atividades de lazer. Nossos voluntários fazem visitas semanais e participam de atividades recreativas no lar de idosos parceiro.",
+      "localizacao": "Porto Alegre, RS",
+      "categorias": [5, 9],
+      "emoji": "👴",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-01-20T10:00:00Z",
+      "atualizada_em": "2026-01-20T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 6,
+    "fields": {
+      "responsavel": null,
+      "nome": "Código Livre",
+      "descricao": "Levamos educação digital e programação a jovens de comunidades periféricas. Oferecemos cursos de lógica de programação, desenvolvimento web e robótica. Voluntários com conhecimentos em tecnologia podem dar aulas, mentorar alunos ou contribuir com material didático.",
+      "localizacao": "Recife, PE",
+      "categorias": [6, 2, 10],
+      "emoji": "💻",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-01-22T10:00:00Z",
+      "atualizada_em": "2026-01-22T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 7,
+    "fields": {
+      "responsavel": null,
+      "nome": "Sons da Favela",
+      "descricao": "Usamos a música como ferramenta de transformação social para crianças e jovens em comunidades do Rio de Janeiro. Oferecemos aulas de violão, percussão, canto e produção musical. Voluntários músicos ou simplesmente apaixonados por arte são muito bem-vindos.",
+      "localizacao": "Rio de Janeiro, RJ",
+      "categorias": [7, 10],
+      "emoji": "🎵",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-01-25T10:00:00Z",
+      "atualizada_em": "2026-01-25T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 8,
+    "fields": {
+      "responsavel": null,
+      "nome": "Reconstruir",
+      "descricao": "Reformamos e construímos moradias dignas para famílias em situação de risco habitacional. Nossos mutirões de construção acontecem mensalmente e contam com engenheiros, arquitetos e voluntários sem experiência técnica — há tarefas para todos. Juntos já entregamos mais de 150 casas reformadas.",
+      "localizacao": "Salvador, BA",
+      "categorias": [8],
+      "emoji": "🏗️",
+      "ativa": true,
+      "urgente": true,
+      "criada_em": "2026-02-01T10:00:00Z",
+      "atualizada_em": "2026-02-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 9,
+    "fields": {
+      "responsavel": null,
+      "nome": "Saúde na Comunidade",
+      "descricao": "Levamos atendimento básico de saúde — triagem, orientação nutricional, verificação de pressão e glicemia — a comunidades sem acesso a postos de saúde. Profissionais da saúde e estudantes de medicina, enfermagem, nutrição e farmácia podem atuar diretamente. Outros voluntários auxiliam na organização das ações.",
+      "localizacao": "Manaus, AM",
+      "categorias": [9, 4],
+      "emoji": "🏥",
+      "ativa": true,
+      "urgente": true,
+      "criada_em": "2026-02-05T10:00:00Z",
+      "atualizada_em": "2026-02-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 10,
+    "fields": {
+      "responsavel": null,
+      "nome": "Planeta Verde",
+      "descricao": "Realizamos plantio de mudas nativas, educação ambiental em escolas públicas e campanhas de conscientização sobre reciclagem e consumo consciente. Voluntários participam de finais de semana de plantio em áreas degradadas e de oficinas em escolas. Cada muda plantada é um passo para um futuro melhor.",
+      "localizacao": "Brasília, DF",
+      "categorias": [1, 2],
+      "emoji": "🌿",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-02-08T10:00:00Z",
+      "atualizada_em": "2026-02-08T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 11,
+    "fields": {
+      "responsavel": null,
+      "nome": "Banco de Alimentos SP",
+      "descricao": "Coletamos alimentos não perecíveis e frescos de supermercados, feiras e restaurantes e distribuímos a famílias em situação de insegurança alimentar. Voluntários ajudam na triagem, embalagem e distribuição nos fins de semana. Também organizamos campanhas de arrecadação em empresas e condomínios.",
+      "localizacao": "São Paulo, SP",
+      "categorias": [4],
+      "emoji": "🍎",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-02-10T10:00:00Z",
+      "atualizada_em": "2026-02-10T10:00:00Z"
+    }
+  },
+  {
+    "model": "core.ong",
+    "pk": 12,
+    "fields": {
+      "responsavel": null,
+      "nome": "Abrigo Esperança",
+      "descricao": "Acolhemos crianças e adolescentes em situação de vulnerabilidade, abandono ou conflito familiar. Voluntários contribuem com tutoria escolar, atividades recreativas, oficinas de arte e esporte. Também precisamos de profissionais de psicologia e assistência social para atendimento especializado.",
+      "localizacao": "Fortaleza, CE",
+      "categorias": [10, 9],
+      "emoji": "🏠",
+      "ativa": true,
+      "urgente": false,
+      "criada_em": "2026-02-12T10:00:00Z",
+      "atualizada_em": "2026-02-12T10:00:00Z"
+    }
+  }
+]

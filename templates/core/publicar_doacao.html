@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+{% block title %}Publicar Necessidade - Conexão Cidadã{% endblock %}
+
+{% block content %}
+<div class="perfil-container" style="max-width:600px; margin:0 auto;">
+  <div class="perfil-card">
+
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.8rem;">
+      <div class="card-avatar av-amber" style="width:3rem; height:3rem; font-size:1.5rem; flex-shrink:0;">🎁</div>
+      <div>
+        <h1 style="font-size:1.3rem; font-weight:700; margin:0; color:var(--text-primary);">Publicar necessidade de doação</h1>
+        <p style="font-size:.85rem; color:var(--text-muted); margin:.2rem 0 0;">{{ ong.emoji }} {{ ong.nome }}</p>
+      </div>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <ul class="errorlist" style="margin-bottom:1rem;">
+        {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      <!-- Tipo -->
+      <div class="form-group">
+        <label class="form-label" for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>
+        {{ form.tipo }}
+        {% if form.tipo.errors %}
+          <ul class="errorlist">{% for e in form.tipo.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <!-- Descrição -->
+      <div class="form-group">
+        <label class="form-label" for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+        {{ form.descricao }}
+        <small style="color:var(--text-muted); font-size:.78rem;">Informe quantidade, tamanho, condição ou qualquer detalhe importante.</small>
+        {% if form.descricao.errors %}
+          <ul class="errorlist">{% for e in form.descricao.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <!-- Urgente -->
+      <div class="form-group" style="display:flex; align-items:center; gap:.75rem; padding:1rem; background:var(--surface-alt); border-radius:var(--radius); border:1px solid var(--border);">
+        {{ form.urgente }}
+        <div>
+          <label for="{{ form.urgente.id_for_label }}" style="font-weight:600; font-size:.9rem; cursor:pointer;">{{ form.urgente.label }}</label>
+          <p style="font-size:.78rem; color:var(--text-muted); margin:.1rem 0 0;">Exibe um badge vermelho de urgência na listagem.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:.75rem; margin-top:1.5rem;">
+        <button type="submit" class="btn-filled" style="flex:1;">Publicar necessidade</button>
+        <a href="{% url 'doacoes' %}" class="btn-outline" style="flex:1; text-align:center; padding:.65rem 1rem;">Cancelar</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

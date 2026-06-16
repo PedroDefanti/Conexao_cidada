@@ -1,39 +1,148 @@
 {% extends 'core/base.html' %}
-{% block title %}Inscrição - {{ ong.nome }}{% endblock %}
+{% block title %}Inscrição em {{ ong.nome }} - Conexão Cidadã{% endblock %}
 
 {% block content %}
-<div class="login-container">
-  <div class="login-card" style="max-width:480px;">
-    <div class="login-header">
-      <h2>{{ ong.emoji }} {{ ong.nome }}</h2>
-      <p>{{ ong.localizacao }} · Preencha os campos para se inscrever</p>
+<div class="perfil-container" style="max-width:660px; margin:0 auto;">
+  <div class="perfil-card">
+
+    <!-- Cabeçalho da ONG -->
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.8rem; padding-bottom:1.4rem; border-bottom:1px solid var(--border);">
+      <div class="card-avatar av-green" style="width:3.2rem; height:3.2rem; font-size:1.6rem; flex-shrink:0;">{{ ong.emoji }}</div>
+      <div>
+        <h1 style="font-size:1.25rem; font-weight:700; margin:0; color:var(--text-primary);">Inscrição em {{ ong.nome }}</h1>
+        <p style="font-size:.85rem; color:var(--text-muted); margin:.25rem 0 0;">📍 {{ ong.localizacao }}</p>
+      </div>
     </div>
 
     <form method="post" novalidate>
       {% csrf_token %}
 
       {% if form.non_field_errors %}
-      <ul class="errorlist non-field-errors">
-        {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
-      </ul>
+      <div style="background:#ef444420; border:1px solid #ef4444; border-radius:var(--radius); padding:.8rem 1rem; margin-bottom:1.2rem;">
+        {% for e in form.non_field_errors %}<p style="color:#ef4444; margin:0; font-size:.88rem;">{{ e }}</p>{% endfor %}
+      </div>
       {% endif %}
 
-      {% for field in form %}
-      <div class="input-group">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}
-        <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      <!-- ── DIAS ── -->
+      <div class="form-group" style="margin-bottom:1.4rem;">
+        <label class="form-label" style="display:block; margin-bottom:.6rem; font-weight:600;">
+          📅 {{ form.dias.label }}
+          <span style="color:#ef4444;">*</span>
+        </label>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+          {% for choice in form.dias %}
+          <label style="display:flex; align-items:center; gap:.4rem; background:var(--surface-alt); border:1.5px solid var(--border); border-radius:var(--radius); padding:.4rem .85rem; cursor:pointer; font-size:.88rem; transition:all .15s;" class="checkbox-pill">
+            {{ choice.tag }}
+            <span>{{ choice.choice_label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% if form.dias.errors %}
+          <p style="color:#ef4444; font-size:.82rem; margin-top:.4rem;">{{ form.dias.errors.0 }}</p>
         {% endif %}
       </div>
-      {% endfor %}
 
-      <button type="submit" class="btn-login">Confirmar Inscrição</button>
+      <!-- ── HORÁRIOS ── -->
+      <div class="form-group" style="margin-bottom:1.4rem;">
+        <label class="form-label" style="display:block; margin-bottom:.6rem; font-weight:600;">
+          🕐 {{ form.horarios.label }}
+          <span style="color:#ef4444;">*</span>
+        </label>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+          {% for choice in form.horarios %}
+          <label style="display:flex; align-items:center; gap:.4rem; background:var(--surface-alt); border:1.5px solid var(--border); border-radius:var(--radius); padding:.4rem .85rem; cursor:pointer; font-size:.88rem; transition:all .15s;" class="checkbox-pill">
+            {{ choice.tag }}
+            <span>{{ choice.choice_label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% if form.horarios.errors %}
+          <p style="color:#ef4444; font-size:.82rem; margin-top:.4rem;">{{ form.horarios.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- ── MODO DE AJUDA ── -->
+      <div class="form-group" style="margin-bottom:1.4rem;">
+        <label class="form-label" style="display:block; margin-bottom:.6rem; font-weight:600;">
+          🤝 {{ form.tipo_ajuda.label }}
+          <span style="color:#ef4444;">*</span>
+        </label>
+        <div style="display:flex; flex-direction:column; gap:.5rem;">
+          {% for choice in form.tipo_ajuda %}
+          <label style="display:flex; align-items:center; gap:.6rem; background:var(--surface-alt); border:1.5px solid var(--border); border-radius:var(--radius); padding:.6rem 1rem; cursor:pointer; font-size:.9rem; transition:all .15s;" class="radio-pill">
+            {{ choice.tag }}
+            <span>{{ choice.choice_label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% if form.tipo_ajuda.errors %}
+          <p style="color:#ef4444; font-size:.82rem; margin-top:.4rem;">{{ form.tipo_ajuda.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- ── TIPOS DE DOAÇÃO ── -->
+      <div class="form-group" style="margin-bottom:1.4rem;">
+        <label class="form-label" style="display:block; margin-bottom:.4rem; font-weight:600;">
+          🎁 {{ form.tipos_doacao.label }}
+        </label>
+        <small style="color:var(--text-muted); font-size:.8rem; display:block; margin-bottom:.6rem;">Opcional — marque os tipos com que pode contribuir.</small>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+          {% for choice in form.tipos_doacao %}
+          <label style="display:flex; align-items:center; gap:.4rem; background:var(--surface-alt); border:1.5px solid var(--border); border-radius:var(--radius); padding:.4rem .85rem; cursor:pointer; font-size:.85rem; transition:all .15s;" class="checkbox-pill">
+            {{ choice.tag }}
+            <span>{{ choice.choice_label }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- ── MENSAGEM ── -->
+      <div class="form-group" style="margin-bottom:1.4rem;">
+        <label class="form-label" style="display:block; margin-bottom:.5rem; font-weight:600;">
+          💬 {{ form.mensagem.label }}
+        </label>
+        {{ form.mensagem }}
+        {% if form.mensagem.errors %}
+          <p style="color:#ef4444; font-size:.82rem; margin-top:.4rem;">{{ form.mensagem.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div style="display:flex; gap:.75rem; margin-top:1.2rem;">
+        <button type="submit" class="btn-filled" style="flex:2;">🙋 Enviar inscrição</button>
+        <a href="{% url 'detalhe_ong' ong.pk %}" class="btn-outline" style="flex:1; text-align:center; padding:.65rem 1rem;">Cancelar</a>
+      </div>
     </form>
 
-    <div class="login-footer">
-      <a href="{% url 'index' %}">← Voltar para as ONGs</a>
-    </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* Destaca checkbox/radio selecionado com borda verde */
+  document.querySelectorAll('.checkbox-pill input, .radio-pill input').forEach(function(input) {
+    function update() {
+      var label = input.closest('label');
+      if (input.checked) {
+        label.style.borderColor = 'var(--green)';
+        label.style.background  = 'rgba(16,185,129,.12)';
+      } else {
+        label.style.borderColor = 'var(--border)';
+        label.style.background  = 'var(--surface-alt)';
+      }
+    }
+    update();
+    input.addEventListener('change', function() {
+      /* Para radio: reset todos do grupo primeiro */
+      if (input.type === 'radio') {
+        document.querySelectorAll('input[name="' + input.name + '"]').forEach(function(r) {
+          var l = r.closest('label');
+          l.style.borderColor = 'var(--border)';
+          l.style.background  = 'var(--surface-alt)';
+        });
+      }
+      update();
+    });
+  });
+</script>
 {% endblock %}

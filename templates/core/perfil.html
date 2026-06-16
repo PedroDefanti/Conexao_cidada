@@ -4,39 +4,119 @@
 {% block content %}
 <div class="perfil-container">
 
-  <!-- Card do usuário -->
+  <!-- ── CARD DO USUÁRIO ── -->
   <div class="perfil-card">
-    <div class="perfil-avatar">👤</div>
-    <div class="perfil-nome">{{ user.first_name|default:user.username }}</div>
-    <div class="perfil-email">{{ user.email }}</div>
-    <div class="perfil-tipo">
-      {% if user.tipo == 'ong' %}
-        <span class="tag tag-blue">🏢 ONG — {{ user.nome_organizacao }}</span>
+    <div class="perfil-avatar-wrap">
+      {% if user.foto_perfil %}
+        <img src="{{ user.foto_perfil.url }}" class="perfil-avatar-img" alt="Foto de perfil">
       {% else %}
-        <span class="tag tag-green">🙋 Voluntário</span>
+        <div class="perfil-avatar">{{ user.nome_exibicao|first|upper }}</div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data" class="foto-form" id="foto-form">
+        {% csrf_token %}
+        <label for="{{ foto_form.foto_perfil.id_for_label }}" class="btn-foto">📷 Alterar foto</label>
+        {{ foto_form.foto_perfil }}
+        {% if foto_form.foto_perfil.errors %}
+          <ul class="errorlist">{% for e in foto_form.foto_perfil.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </form>
+    </div>
+
+    <div class="perfil-info">
+      {% if user.tipo == 'ong' %}
+        <div class="perfil-nome">{{ user.nome_organizacao }}</div>
+        <div class="perfil-email">{{ user.email }}</div>
+        <div class="perfil-tipo"><span class="tag tag-blue">🏢 ONG</span></div>
+        {% if user.cnpj %}<div class="perfil-cnpj">CNPJ: {{ user.cnpj }}</div>{% endif %}
+        <div style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+          <a href="{% url 'editar_ong' %}" class="btn-filled" style="font-size:.82rem; padding:.4rem .9rem;">✏️ Editar perfil da ONG</a>
+          <a href="{% url 'gerenciar_inscricoes' %}" class="btn-outline" style="font-size:.82rem; padding:.4rem .9rem;">👥 Inscrições</a>
+        </div>
+      {% else %}
+        <div class="perfil-nome">{{ user.first_name|default:user.username }}</div>
+        <div class="perfil-email">{{ user.email }}</div>
+        <div class="perfil-tipo"><span class="tag tag-green">🙋 Voluntário</span></div>
       {% endif %}
     </div>
   </div>
 
-  <!-- Inscrições -->
+  <!-- ── DOAÇÕES DA ONG ── -->
+  {% if user.tipo == 'ong' %}
   <div class="perfil-card">
-    <h3 style="font-family:'Sora',sans-serif; font-size:1rem; margin-bottom:1.2rem;">
-      📋 Minhas Inscrições ({{ inscricoes.count }})
-    </h3>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem;">
+      <h3 class="card-section-title">🎁 Minhas Necessidades de Doação</h3>
+      <a href="{% url 'publicar_doacao' %}" class="btn-filled" style="font-size:.8rem; padding:.4rem .9rem;">+ Publicar</a>
+    </div>
+    {% if doacoes_ong %}
+      {% for d in doacoes_ong %}
+      <div class="inscricao-item">
+        <div style="flex:1;">
+          <div style="font-weight:600; font-size:.9rem;">{{ d.get_tipo_display }}</div>
+          <div style="font-size:.78rem; color:var(--text-muted); margin-top:.2rem;">{{ d.descricao }}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:.5rem; flex-shrink:0;">
+          {% if d.urgente %}<span class="badge-urgente">🔴 Urgente</span>{% endif %}
+          <!-- Toggle ativa/desativa -->
+          <form method="post" action="{% url 'toggle_doacao' d.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="perfil">
+            <button type="submit"
+                    class="btn-outline"
+                    title="{% if d.ativa %}Encerrar{% else %}Reativar{% endif %} esta necessidade">
+              {% if d.ativa %}✅ Ativa{% else %}⏸ Encerrada{% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--text-muted); font-size:.9rem;">
+        Nenhuma necessidade publicada ainda.
+        <a href="{% url 'publicar_doacao' %}" style="color:var(--green); text-decoration:none; font-weight:500;">Publicar agora →</a>
+      </p>
+    {% endif %}
+  </div>
+  {% endif %}
 
+  <!-- ── INSCRIÇÕES DO VOLUNTÁRIO ── -->
+  {% if user.tipo == 'voluntario' %}
+  <div class="perfil-card">
+    <h3 class="card-section-title" style="margin-bottom:1.2rem;">📋 Minhas Inscrições ({{ inscricoes.paginator.count }})</h3>
     {% for ins in inscricoes %}
     <div class="inscricao-item">
-      <div>
-        <div style="font-weight:600; font-size:.9rem;">{{ ins.ong.emoji }} {{ ins.ong.nome }}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600; font-size:.9rem;">
+          <a href="{% url 'detalhe_ong' ins.ong.pk %}" style="color:inherit; text-decoration:none;">
+            {{ ins.ong.emoji }} {{ ins.ong.nome }}
+          </a>
+        </div>
         <div style="font-size:.78rem; color:var(--text-muted); margin-top:.2rem;">
           {{ ins.ong.localizacao }} · {{ ins.criada_em|date:"d/m/Y" }}
         </div>
+        {% if ins.disponibilidade %}
+        <div style="font-size:.78rem; color:var(--text-muted);">🗓 {{ ins.disponibilidade }}</div>
+        {% endif %}
       </div>
-      <span class="badge-{{ ins.status }}">
-        {% if ins.status == 'pendente' %}⏳ Pendente
-        {% elif ins.status == 'aprovada' %}✅ Aprovada
-        {% else %}❌ Rejeitada{% endif %}
-      </span>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:.4rem; flex-shrink:0;">
+        <span class="badge-{{ ins.status }}">
+          {% if ins.status == 'pendente' %}⏳ Pendente
+          {% elif ins.status == 'aprovada' %}✅ Aprovada
+          {% else %}❌ Rejeitada{% endif %}
+        </span>
+        <!-- Cancelar inscrição (apenas pendente) -->
+        {% if ins.status == 'pendente' %}
+        <form method="post" action="{% url 'cancelar_inscricao' ins.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit"
+                  class="btn-outline"
+                  style="font-size:.72rem; padding:.2rem .5rem; color:var(--text-muted); border-color:var(--border);"
+                  onclick="return confirm('Cancelar inscrição em {{ ins.ong.nome }}?')">
+            Cancelar
+          </button>
+        </form>
+        {% endif %}
+      </div>
     </div>
     {% empty %}
     <p style="color:var(--text-muted); font-size:.9rem;">
@@ -44,7 +124,31 @@
       <a href="{% url 'index' %}" style="color:var(--green); text-decoration:none; font-weight:500;">Explorar ONGs →</a>
     </p>
     {% endfor %}
+
+    <!-- Paginação -->
+    {% if inscricoes.has_other_pages %}
+    <div style="display:flex; justify-content:center; gap:.5rem; margin-top:1rem;">
+      {% if inscricoes.has_previous %}
+        <a href="?page={{ inscricoes.previous_page_number }}" class="btn-outline" style="padding:.35rem .8rem; font-size:.82rem;">← Anterior</a>
+      {% endif %}
+      <span style="padding:.35rem .8rem; font-size:.82rem; color:var(--text-muted); align-self:center;">
+        {{ inscricoes.number }}/{{ inscricoes.paginator.num_pages }}
+      </span>
+      {% if inscricoes.has_next %}
+        <a href="?page={{ inscricoes.next_page_number }}" class="btn-outline" style="padding:.35rem .8rem; font-size:.82rem;">Próxima →</a>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
+  {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('{{ foto_form.foto_perfil.id_for_label }}').addEventListener('change', function () {
+    document.getElementById('foto-form').submit();
+  });
+</script>
 {% endblock %}

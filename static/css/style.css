@@ -412,3 +412,242 @@ footer {
   .steps { flex-direction: column; align-items: center; }
   .login-card { padding: 1.5rem 1.2rem; }
 }
+.nav-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--green);
+  vertical-align: middle;
+  margin-right: .35rem;
+}
+.nav-avatar-placeholder {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(34,197,94,.2);
+  color: var(--green);
+  font-weight: 700;
+  font-size: .8rem;
+  border: 2px solid var(--green);
+  vertical-align: middle;
+  margin-right: .35rem;
+}
+
+/* ─── FOTO DE PERFIL ──────────────────────────────────────────────────────── */
+.perfil-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+.perfil-avatar {
+  width: 88px; height: 88px;
+  background: rgba(34,197,94,.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--green);
+  border: 3px solid rgba(34,197,94,.3);
+  margin-bottom: .75rem;
+}
+.perfil-avatar-img {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--green);
+  margin-bottom: .75rem;
+}
+.perfil-info { text-align: center; }
+.perfil-cnpj { font-size: .8rem; color: var(--text-muted); margin-top: .3rem; }
+.card-section-title { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; }
+
+/* upload foto */
+.foto-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+}
+.foto-form input[type="file"] { display: none; }
+.btn-foto {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: .35rem .9rem;
+  border-radius: 8px;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-foto:hover { border-color: var(--green); color: var(--green); }
+.btn-salvar-foto {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: .3rem .8rem;
+  border-radius: 8px;
+  font-size: .8rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s;
+}
+.btn-salvar-foto:hover { background: var(--green-dark); }
+
+/* ─── BADGES EXTRAS ──────────────────────────────────────────────────────── */
+.badge-urgente { background: rgba(239,68,68,.15); color: #f87171; padding: .2rem .6rem; border-radius: 50px; font-size: .75rem; font-weight: 600; }
+
+/* ─── CHECKBOX ESTILIZADO ────────────────────────────────────────────────── */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .9rem;
+  cursor: pointer;
+}
+.checkbox-input, .checkbox-label input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(34,197,94,.15);
+  color: var(--green);
+  border: 1px solid rgba(34,197,94,.3);
+  padding: .3rem .9rem;
+  border-radius: 50px;
+  font-size: .8rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  letter-spacing: .03em;
+}
+.hero-ctas {
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+/* ─── CARROSSEL DE FRASES ────────────────────────────────────────────────── */
+.frases-section {
+  overflow: hidden;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  margin-bottom: 3rem;
+}
+.frases-track {
+  display: flex;
+  gap: 3rem;
+  white-space: nowrap;
+  will-change: transform;
+}
+.frase-item {
+  flex-shrink: 0;
+  font-size: .875rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0 1.5rem;
+  border-left: 2px solid rgba(34,197,94,.4);
+}
+.frase-item::before { content: '"'; color: var(--green); font-size: 1.1rem; }
+
+/* ─── NÚMEROS DE IMPACTO ─────────────────────────────────────────────────── */
+.impacto {
+  padding: 0 2rem 3rem;
+}
+.impacto-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.impacto-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+.impacto-num {
+  font-family: 'Sora', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--green);
+}
+.impacto-label {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-top: .3rem;
+}
+
+/* ─── ONGS PARCEIRAS ─────────────────────────────────────────────────────── */
+.parceiras {
+  padding: 0 2rem 4rem;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding-top: 3.5rem;
+}
+.parceiras-sub {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: .9rem;
+  margin-bottom: 2rem;
+  margin-top: -.8rem;
+}
+.parceiras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.parceira-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem 1rem;
+  text-align: center;
+  transition: transform .2s, border-color .2s;
+}
+.parceira-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(34,197,94,.4);
+}
+.parceira-emoji { font-size: 2rem; margin-bottom: .6rem; }
+.parceira-nome  { font-family: 'Sora', sans-serif; font-weight: 700; font-size: .9rem; margin-bottom: .3rem; }
+.parceira-causa { font-size: .78rem; color: var(--text-muted); line-height: 1.4; }
+
+/* ─── CTA FINAL ──────────────────────────────────────────────────────────── */
+.cta-final {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: radial-gradient(ellipse at 50% 50%, rgba(34,197,94,.1) 0%, transparent 70%);
+  border-top: 1px solid var(--border);
+}
+.cta-final h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: .6rem;
+}
+.cta-final p {
+  color: var(--text-muted);
+  margin-bottom: 1.8rem;
+}
+
+/* ─── RESPONSIVO NOVO ────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .impacto-grid { grid-template-columns: repeat(2, 1fr); }
+  .parceiras-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 420px) {
+  .impacto-grid { grid-template-columns: repeat(2, 1fr); }
+  .parceiras-grid { grid-template-columns: 1fr 1fr; }
+}

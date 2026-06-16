@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ ong.nome }} - Conexão Cidadã{% endblock %}
+
+{% block content %}
+<div class="perfil-container">
+
+  <!-- ── CABEÇALHO DA ONG ── -->
+  <div class="perfil-card">
+    <div style="display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;">
+      <div class="card-avatar av-green" style="width:4rem; height:4rem; font-size:2rem; flex-shrink:0;">
+        {{ ong.emoji }}
+      </div>
+      <div style="flex:1; min-width:200px;">
+        <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:.4rem;">
+          <h1 style="font-size:1.6rem; font-weight:700; color:var(--text-primary); margin:0;">{{ ong.nome }}</h1>
+          {% if ong.urgente %}
+            <span class="tag tag-red">🔴 Urgente</span>
+          {% endif %}
+        </div>
+        <div style="color:var(--text-muted); font-size:.9rem; margin-bottom:.8rem;">📍 {{ ong.localizacao }}</div>
+        <div class="tags" style="margin-bottom:1rem;">
+          {% for cat in ong.categorias.all %}
+            <span class="tag tag-green">{{ cat.nome }}</span>
+          {% endfor %}
+        </div>
+        <p style="color:var(--text-secondary); line-height:1.7;">{{ ong.descricao }}</p>
+      </div>
+    </div>
+
+    <!-- Estatísticas rápidas -->
+    <div style="display:flex; gap:2rem; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border); flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-size:1.4rem; font-weight:700; color:var(--green);">{{ inscricoes_count }}</div>
+        <div style="font-size:.78rem; color:var(--text-muted);">Voluntários inscritos</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:1.4rem; font-weight:700; color:var(--green);">{{ doacoes.count }}</div>
+        <div style="font-size:.78rem; color:var(--text-muted);">Necessidades abertas</div>
+      </div>
+    </div>
+
+    <!-- Ação principal -->
+    <div style="margin-top:1.5rem;">
+      {% if user.is_authenticated %}
+        {% if user.tipo == 'voluntario' %}
+          {% if ja_inscrito %}
+            <span class="btn-filled" style="opacity:.6; cursor:default;">✅ Você já está inscrito</span>
+          {% else %}
+            <a href="{% url 'inscricao' ong.pk %}" class="btn-filled">🙋 Quero me voluntariar</a>
+          {% endif %}
+        {% elif user.tipo == 'ong' %}
+          {% if ong.responsavel == user %}
+            <a href="{% url 'editar_ong' %}" class="btn-filled">✏️ Editar perfil da ONG</a>
+            <a href="{% url 'gerenciar_inscricoes' %}" class="btn-outline" style="margin-left:.5rem;">👥 Gerenciar inscrições</a>
+          {% endif %}
+        {% endif %}
+      {% else %}
+        <a href="{% url 'login' %}?next={% url 'inscricao' ong.pk %}" class="btn-filled">Entrar para se inscrever</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── NECESSIDADES DE DOAÇÃO ── -->
+  {% if doacoes %}
+  <div class="perfil-card">
+    <h2 class="card-section-title" style="margin-bottom:1.2rem;">🎁 O que esta ONG precisa</h2>
+    <div class="ong-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:1rem;">
+      {% for d in doacoes %}
+      <div style="background:var(--surface-alt); border-radius:var(--radius); padding:1rem; border:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.5rem;">
+          <span class="tag tag-amber">{{ d.get_tipo_display }}</span>
+          {% if d.urgente %}<span class="tag tag-red" style="font-size:.7rem;">🔴 Urgente</span>{% endif %}
+        </div>
+        <p style="font-size:.88rem; color:var(--text-secondary); line-height:1.5; margin:0;">{{ d.descricao }}</p>
+        <p style="font-size:.72rem; color:var(--text-muted); margin-top:.5rem;">{{ d.criada_em|date:"d/m/Y" }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
