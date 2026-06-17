@@ -1,83 +1,129 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ ong.nome }} - Conexão Cidadã{% endblock %}
+{% block title %}Gerenciar Inscrições - Conexão Cidadã{% endblock %}
 
 {% block content %}
 <div class="perfil-container">
 
-  <!-- ── CABEÇALHO DA ONG ── -->
+  <!-- ── CABEÇALHO ── -->
   <div class="perfil-card">
-    <div style="display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;">
-      <div class="card-avatar av-green" style="width:4rem; height:4rem; font-size:2rem; flex-shrink:0;">
-        {{ ong.emoji }}
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 style="font-size:1.4rem; font-weight:700; margin:0; color:var(--text);">👥 Gerenciar Inscrições</h1>
+        <p style="color:var(--text-muted); font-size:.88rem; margin:.3rem 0 0;">{{ ong.emoji }} {{ ong.nome }}</p>
       </div>
-      <div style="flex:1; min-width:200px;">
-        <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:.4rem;">
-          <h1 style="font-size:1.6rem; font-weight:700; color:var(--text-primary); margin:0;">{{ ong.nome }}</h1>
-          {% if ong.urgente %}
-            <span class="tag tag-red">🔴 Urgente</span>
-          {% endif %}
-        </div>
-        <div style="color:var(--text-muted); font-size:.9rem; margin-bottom:.8rem;">📍 {{ ong.localizacao }}</div>
-        <div class="tags" style="margin-bottom:1rem;">
-          {% for cat in ong.categorias.all %}
-            <span class="tag tag-green">{{ cat.nome }}</span>
-          {% endfor %}
-        </div>
-        <p style="color:var(--text-secondary); line-height:1.7;">{{ ong.descricao }}</p>
-      </div>
+      <a href="{% url 'detalhe_ong' ong.pk %}" class="btn-outline" style="font-size:.85rem;">Ver página da ONG →</a>
     </div>
 
-    <!-- Estatísticas rápidas -->
-    <div style="display:flex; gap:2rem; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border); flex-wrap:wrap;">
-      <div style="text-align:center;">
-        <div style="font-size:1.4rem; font-weight:700; color:var(--green);">{{ inscricoes_count }}</div>
-        <div style="font-size:.78rem; color:var(--text-muted);">Voluntários inscritos</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="font-size:1.4rem; font-weight:700; color:var(--green);">{{ doacoes.count }}</div>
-        <div style="font-size:.78rem; color:var(--text-muted);">Necessidades abertas</div>
-      </div>
+    <!-- Contadores -->
+    <div style="display:flex; gap:1rem; margin-top:1.5rem; flex-wrap:wrap;">
+      <a href="{% url 'gerenciar_inscricoes' %}"
+         style="flex:1; min-width:100px; text-align:center; padding:.8rem; background:var(--bg2); border-radius:var(--radius); border:2px solid {% if not status_filtro %}var(--green){% else %}var(--border){% endif %}; text-decoration:none; color:inherit;">
+        <div style="font-size:1.5rem; font-weight:700; color:var(--green);">{{ contagens.total }}</div>
+        <div style="font-size:.75rem; color:var(--text-muted);">Total</div>
+      </a>
+      <a href="?status=pendente"
+         style="flex:1; min-width:100px; text-align:center; padding:.8rem; background:var(--bg2); border-radius:var(--radius); border:2px solid {% if status_filtro == 'pendente' %}#f59e0b{% else %}var(--border){% endif %}; text-decoration:none; color:inherit;">
+        <div style="font-size:1.5rem; font-weight:700; color:#f59e0b;">{{ contagens.pendente }}</div>
+        <div style="font-size:.75rem; color:var(--text-muted);">Pendentes</div>
+      </a>
+      <a href="?status=aprovada"
+         style="flex:1; min-width:100px; text-align:center; padding:.8rem; background:var(--bg2); border-radius:var(--radius); border:2px solid {% if status_filtro == 'aprovada' %}var(--green){% else %}var(--border){% endif %}; text-decoration:none; color:inherit;">
+        <div style="font-size:1.5rem; font-weight:700; color:var(--green);">{{ contagens.aprovada }}</div>
+        <div style="font-size:.75rem; color:var(--text-muted);">Aprovadas</div>
+      </a>
+      <a href="?status=rejeitada"
+         style="flex:1; min-width:100px; text-align:center; padding:.8rem; background:var(--bg2); border-radius:var(--radius); border:2px solid {% if status_filtro == 'rejeitada' %}#ef4444{% else %}var(--border){% endif %}; text-decoration:none; color:inherit;">
+        <div style="font-size:1.5rem; font-weight:700; color:#ef4444;">{{ contagens.rejeitada }}</div>
+        <div style="font-size:.75rem; color:var(--text-muted);">Rejeitadas</div>
+      </a>
     </div>
+  </div>
 
-    <!-- Ação principal -->
-    <div style="margin-top:1.5rem;">
-      {% if user.is_authenticated %}
-        {% if user.tipo == 'voluntario' %}
-          {% if ja_inscrito %}
-            <span class="btn-filled" style="opacity:.6; cursor:default;">✅ Você já está inscrito</span>
+  <!-- ── LISTA DE INSCRIÇÕES ── -->
+  <div class="perfil-card">
+    {% for ins in inscricoes %}
+    <div class="inscricao-item" style="flex-direction:column; align-items:flex-start; gap:.8rem; padding:1.2rem 0; {% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
+
+      <!-- Voluntário -->
+      <div style="display:flex; align-items:center; gap:.8rem; width:100%;">
+        <div class="perfil-avatar" style="width:2.4rem; height:2.4rem; font-size:1rem; flex-shrink:0;">
+          {% if ins.usuario.foto_perfil %}
+            <img src="{{ ins.usuario.foto_perfil.url }}" style="width:2.4rem; height:2.4rem; border-radius:50%; object-fit:cover;">
           {% else %}
-            <a href="{% url 'inscricao' ong.pk %}" class="btn-filled">🙋 Quero me voluntariar</a>
+            {{ ins.usuario.first_name|first|upper|default:ins.usuario.email|first|upper }}
           {% endif %}
-        {% elif user.tipo == 'ong' %}
-          {% if ong.responsavel == user %}
-            <a href="{% url 'editar_ong' %}" class="btn-filled">✏️ Editar perfil da ONG</a>
-            <a href="{% url 'gerenciar_inscricoes' %}" class="btn-outline" style="margin-left:.5rem;">👥 Gerenciar inscrições</a>
-          {% endif %}
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:600; font-size:.95rem;">{{ ins.usuario.first_name|default:ins.usuario.email }}</div>
+          <div style="font-size:.78rem; color:var(--text-muted);">{{ ins.usuario.email }} · inscrito em {{ ins.criada_em|date:"d/m/Y" }}</div>
+        </div>
+        <span class="badge-{{ ins.status }}" style="flex-shrink:0;">
+          {% if ins.status == 'pendente' %}⏳ Pendente
+          {% elif ins.status == 'aprovada' %}✅ Aprovada
+          {% else %}❌ Rejeitada{% endif %}
+        </span>
+      </div>
+
+      <!-- Mensagem e disponibilidade -->
+      {% if ins.mensagem %}
+      <div style="background:var(--bg2); border-radius:var(--radius); padding:.7rem 1rem; width:100%; box-sizing:border-box;">
+        <p style="font-size:.85rem; color:var(--text); margin:0; font-style:italic;">"{{ ins.mensagem }}"</p>
+      </div>
+      {% endif %}
+      <div style="font-size:.82rem; color:var(--text-muted);">
+        🗓 Disponibilidade: <strong>{{ ins.disponibilidade }}</strong>
+      </div>
+
+      <!-- Ações -->
+      <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+        {% if ins.status != 'aprovada' %}
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="inscricao_pk" value="{{ ins.pk }}">
+          <input type="hidden" name="status" value="aprovada">
+          <button type="submit" class="btn-filled" style="font-size:.8rem; padding:.35rem .9rem; background:#10b981;">✅ Aprovar</button>
+        </form>
         {% endif %}
-      {% else %}
-        <a href="{% url 'login' %}?next={% url 'inscricao' ong.pk %}" class="btn-filled">Entrar para se inscrever</a>
+        {% if ins.status != 'rejeitada' %}
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="inscricao_pk" value="{{ ins.pk }}">
+          <input type="hidden" name="status" value="rejeitada">
+          <button type="submit" class="btn-outline" style="font-size:.8rem; padding:.35rem .9rem; color:#ef4444; border-color:#ef4444;" onclick="return confirm('Rejeitar a inscrição de {{ ins.usuario.first_name|default:ins.usuario.email }}?')">❌ Rejeitar</button>
+        </form>
+        {% endif %}
+        {% if ins.status != 'pendente' %}
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="inscricao_pk" value="{{ ins.pk }}">
+          <input type="hidden" name="status" value="pendente">
+          <button type="submit" class="btn-outline" style="font-size:.8rem; padding:.35rem .9rem;">↩ Voltar p/ pendente</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% empty %}
+    <p style="color:var(--text-muted); text-align:center; padding:2rem 0;">
+      {% if status_filtro %}Nenhuma inscrição com status "{{ status_filtro }}".{% else %}Nenhuma inscrição recebida ainda.{% endif %}
+    </p>
+    {% endfor %}
+
+    <!-- Paginação -->
+    {% if inscricoes.has_other_pages %}
+    <div style="display:flex; justify-content:center; gap:.5rem; margin-top:1.5rem; flex-wrap:wrap;">
+      {% if inscricoes.has_previous %}
+        <a href="?{% if status_filtro %}status={{ status_filtro }}&{% endif %}page={{ inscricoes.previous_page_number }}" class="btn-outline" style="padding:.4rem .9rem; font-size:.85rem;">← Anterior</a>
+      {% endif %}
+      <span style="padding:.4rem .9rem; font-size:.85rem; color:var(--text-muted); align-self:center;">
+        Página {{ inscricoes.number }} de {{ inscricoes.paginator.num_pages }}
+      </span>
+      {% if inscricoes.has_next %}
+        <a href="?{% if status_filtro %}status={{ status_filtro }}&{% endif %}page={{ inscricoes.next_page_number }}" class="btn-outline" style="padding:.4rem .9rem; font-size:.85rem;">Próxima →</a>
       {% endif %}
     </div>
+    {% endif %}
   </div>
-
-  <!-- ── NECESSIDADES DE DOAÇÃO ── -->
-  {% if doacoes %}
-  <div class="perfil-card">
-    <h2 class="card-section-title" style="margin-bottom:1.2rem;">🎁 O que esta ONG precisa</h2>
-    <div class="ong-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:1rem;">
-      {% for d in doacoes %}
-      <div style="background:var(--surface-alt); border-radius:var(--radius); padding:1rem; border:1px solid var(--border);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.5rem;">
-          <span class="tag tag-amber">{{ d.get_tipo_display }}</span>
-          {% if d.urgente %}<span class="tag tag-red" style="font-size:.7rem;">🔴 Urgente</span>{% endif %}
-        </div>
-        <p style="font-size:.88rem; color:var(--text-secondary); line-height:1.5; margin:0;">{{ d.descricao }}</p>
-        <p style="font-size:.72rem; color:var(--text-muted); margin-top:.5rem;">{{ d.criada_em|date:"d/m/Y" }}</p>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
 
 </div>
 {% endblock %}

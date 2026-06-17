@@ -6,13 +6,17 @@
 
   <!-- ── CABEÇALHO DA ONG ── -->
   <div class="perfil-card">
-    <div style="display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;">
-      <div class="card-avatar av-green" style="width:4rem; height:4rem; font-size:2rem; flex-shrink:0;">
-        {{ ong.emoji }}
-      </div>
-      <div style="flex:1; min-width:200px;">
+    <div style="display:flex; align-items:flex-start; gap:1.5rem;">
+      {% if ong.foto_exibicao %}
+        <img src="{{ ong.foto_exibicao }}" style="width:4rem; height:4rem; min-width:4rem; border-radius:var(--radius); object-fit:cover; flex-shrink:0;" alt="{{ ong.nome }}">
+      {% else %}
+        <div class="card-avatar av-green" style="width:4rem; height:4rem; min-width:4rem; font-size:2rem; flex-shrink:0;">
+          {{ ong.emoji }}
+        </div>
+      {% endif %}
+      <div style="flex:1; min-width:0;">
         <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:.4rem;">
-          <h1 style="font-size:1.6rem; font-weight:700; color:var(--text-primary); margin:0;">{{ ong.nome }}</h1>
+          <h1 style="font-size:1.6rem; font-weight:700; color:var(--text); margin:0;">{{ ong.nome }}</h1>
           {% if ong.urgente %}
             <span class="tag tag-red">🔴 Urgente</span>
           {% endif %}
@@ -23,7 +27,7 @@
             <span class="tag tag-green">{{ cat.nome }}</span>
           {% endfor %}
         </div>
-        <p style="color:var(--text-secondary); line-height:1.7;">{{ ong.descricao }}</p>
+        <p style="color:var(--text); line-height:1.7;">{{ ong.descricao }}</p>
       </div>
     </div>
 
@@ -66,12 +70,12 @@
     <h2 class="card-section-title" style="margin-bottom:1.2rem;">🎁 O que esta ONG precisa</h2>
     <div class="ong-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:1rem;">
       {% for d in doacoes %}
-      <div style="background:var(--surface-alt); border-radius:var(--radius); padding:1rem; border:1px solid var(--border);">
+      <div style="background:var(--bg2); border-radius:var(--radius); padding:1rem; border:1px solid var(--border);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.5rem;">
           <span class="tag tag-amber">{{ d.get_tipo_display }}</span>
           {% if d.urgente %}<span class="tag tag-red" style="font-size:.7rem;">🔴 Urgente</span>{% endif %}
         </div>
-        <p style="font-size:.88rem; color:var(--text-secondary); line-height:1.5; margin:0;">{{ d.descricao }}</p>
+        <p style="font-size:.88rem; color:var(--text); line-height:1.5; margin:0;">{{ d.descricao }}</p>
         <p style="font-size:.72rem; color:var(--text-muted); margin-top:.5rem;">{{ d.criada_em|date:"d/m/Y" }}</p>
       </div>
       {% endfor %}

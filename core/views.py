@@ -311,7 +311,11 @@ def editar_ong_view(request):
     # ── Bug 1 corrigido: busca a ONG pelo responsavel; se não existe cria ──
     ong = _get_ou_criar_ong(request.user)
 
-    form = EditarONGForm(request.POST or None, instance=ong)
+    form = EditarONGForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=ong,
+    )
 
     if request.method == 'POST' and form.is_valid():
         ong_salva = form.save()

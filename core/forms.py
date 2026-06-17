@@ -340,7 +340,7 @@ class EditarONGForm(forms.ModelForm):
 
     class Meta:
         model = ONG
-        fields = ['nome', 'descricao', 'localizacao', 'emoji', 'categorias', 'urgente']
+        fields = ['nome', 'descricao', 'localizacao', 'emoji', 'foto', 'foto_url', 'categorias', 'urgente']
         widgets = {
             'nome': forms.TextInput(attrs={
                 'class': 'form-input',
@@ -355,12 +355,19 @@ class EditarONGForm(forms.ModelForm):
                 'class': 'form-input',
                 'placeholder': 'Ex: São Paulo, SP',
             }),
+            'foto': forms.FileInput(attrs={'class': 'form-input', 'accept': 'image/*'}),
+            'foto_url': forms.URLInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'https://exemplo.com/foto.jpg (opcional, usado se não houver upload)',
+            }),
             'urgente': forms.CheckboxInput(attrs={'class': 'checkbox-input'}),
         }
         labels = {
             'nome': 'Nome da organização',
             'descricao': 'Descrição',
             'localizacao': 'Localização',
+            'foto': 'Foto da ONG (upload)',
+            'foto_url': 'Ou link de uma foto (se não quiser fazer upload)',
             'urgente': 'Marcar como urgente (precisa de voluntários agora)',
         }
 
@@ -372,3 +379,19 @@ class EditarONGForm(forms.ModelForm):
 
     def clean_localizacao(self):
         return sanitize(self.cleaned_data['localizacao'])
+
+    def clean_foto(self):
+        foto = self.cleaned_data.get('foto')
+        if foto:
+            if foto.size > 3 * 1024 * 1024:
+                raise ValidationError('Imagem muito grande. Máximo 3MB.')
+            if not foto.content_type.startswith('image/'):
+                raise ValidationError('Arquivo inválido. Envie uma imagem.')
+            try:
+                from PIL import Image
+                img = Image.open(foto)
+                img.verify()
+                foto.seek(0)
+            except Exception:
+                raise ValidationError('Arquivo corrompido ou não é uma imagem válida.')
+        return foto

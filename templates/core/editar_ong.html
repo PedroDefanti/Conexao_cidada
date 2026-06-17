@@ -1,83 +1,130 @@
 {% extends 'core/base.html' %}
-{% block title %}{{ ong.nome }} - Conexão Cidadã{% endblock %}
+{% block title %}Editar ONG - Conexão Cidadã{% endblock %}
 
 {% block content %}
-<div class="perfil-container">
-
-  <!-- ── CABEÇALHO DA ONG ── -->
+<div class="perfil-container" style="max-width:680px; margin:0 auto;">
   <div class="perfil-card">
-    <div style="display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;">
-      <div class="card-avatar av-green" style="width:4rem; height:4rem; font-size:2rem; flex-shrink:0;">
-        {{ ong.emoji }}
+
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.8rem;">
+      {% if ong.foto_exibicao %}
+        <img src="{{ ong.foto_exibicao }}" style="width:3rem; height:3rem; border-radius:var(--radius); object-fit:cover; flex-shrink:0;" alt="{{ ong.nome }}">
+      {% else %}
+        <div class="card-avatar av-green" style="width:3rem; height:3rem; font-size:1.5rem;">{{ ong.emoji }}</div>
+      {% endif %}
+      <div>
+        <h1 style="font-size:1.3rem; font-weight:700; margin:0; color:var(--text);">Editar perfil da ONG</h1>
+        <p style="font-size:.85rem; color:var(--text-muted); margin:.2rem 0 0;">Mantenha suas informações atualizadas para atrair voluntários.</p>
       </div>
-      <div style="flex:1; min-width:200px;">
-        <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:.4rem;">
-          <h1 style="font-size:1.6rem; font-weight:700; color:var(--text-primary); margin:0;">{{ ong.nome }}</h1>
-          {% if ong.urgente %}
-            <span class="tag tag-red">🔴 Urgente</span>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- Erros gerais -->
+      {% if form.non_field_errors %}
+      <ul class="errorlist" style="margin-bottom:1rem;">
+        {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+
+      <!-- Nome -->
+      <div class="form-group">
+        <label class="form-label" for="{{ form.nome.id_for_label }}">{{ form.nome.label }}</label>
+        {{ form.nome }}
+        {% if form.nome.errors %}
+          <ul class="errorlist">{% for e in form.nome.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <!-- Descrição -->
+      <div class="form-group">
+        <label class="form-label" for="{{ form.descricao.id_for_label }}">{{ form.descricao.label }}</label>
+        {{ form.descricao }}
+        <small style="color:var(--text-muted); font-size:.78rem;">Máximo 1000 caracteres. Explique sua missão e como voluntários podem ajudar.</small>
+        {% if form.descricao.errors %}
+          <ul class="errorlist">{% for e in form.descricao.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <!-- Localização -->
+      <div class="form-group">
+        <label class="form-label" for="{{ form.localizacao.id_for_label }}">{{ form.localizacao.label }}</label>
+        {{ form.localizacao }}
+        {% if form.localizacao.errors %}
+          <ul class="errorlist">{% for e in form.localizacao.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <!-- Emoji -->
+      <div class="form-group">
+        <label class="form-label" for="{{ form.emoji.id_for_label }}">{{ form.emoji.label }}</label>
+        {{ form.emoji }}
+        <small style="color:var(--text-muted); font-size:.78rem;">Usado como ícone quando não há foto cadastrada.</small>
+        {% if form.emoji.errors %}
+          <ul class="errorlist">{% for e in form.emoji.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <!-- Foto: upload ou URL -->
+      <div class="form-group" style="background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:1rem;">
+        <label class="form-label" style="font-weight:600; margin-bottom:.4rem; display:block;">📷 Foto da ONG</label>
+
+        {% if ong.foto_exibicao %}
+        <div style="margin-bottom:.8rem;">
+          <img src="{{ ong.foto_exibicao }}" style="max-width:100%; max-height:160px; border-radius:var(--radius); object-fit:cover;" alt="Foto atual">
+          <p style="font-size:.75rem; color:var(--text-muted); margin:.3rem 0 0;">Foto atual{% if ong.foto %} (enviada por upload){% else %} (via link){% endif %}</p>
+        </div>
+        {% endif %}
+
+        <div style="margin-bottom:.8rem;">
+          <label class="form-label" for="{{ form.foto.id_for_label }}" style="font-size:.85rem;">{{ form.foto.label }}</label>
+          {{ form.foto }}
+          {% if form.foto.errors %}
+            <ul class="errorlist">{% for e in form.foto.errors %}<li>{{ e }}</li>{% endfor %}</ul>
           {% endif %}
         </div>
-        <div style="color:var(--text-muted); font-size:.9rem; margin-bottom:.8rem;">📍 {{ ong.localizacao }}</div>
-        <div class="tags" style="margin-bottom:1rem;">
-          {% for cat in ong.categorias.all %}
-            <span class="tag tag-green">{{ cat.nome }}</span>
+
+        <div>
+          <label class="form-label" for="{{ form.foto_url.id_for_label }}" style="font-size:.85rem;">{{ form.foto_url.label }}</label>
+          {{ form.foto_url }}
+          <small style="color:var(--text-muted); font-size:.75rem;">Se você enviar um upload acima, ele tem prioridade sobre este link.</small>
+          {% if form.foto_url.errors %}
+            <ul class="errorlist">{% for e in form.foto_url.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Categorias -->
+      <div class="form-group">
+        <label class="form-label">{{ form.categorias.label }}</label>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem;">
+          {% for checkbox in form.categorias %}
+          <label style="display:flex; align-items:center; gap:.4rem; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:.35rem .75rem; cursor:pointer; font-size:.88rem; transition:border-color .2s;">
+            {{ checkbox.tag }}
+            {{ checkbox.choice_label }}
+          </label>
           {% endfor %}
         </div>
-        <p style="color:var(--text-secondary); line-height:1.7;">{{ ong.descricao }}</p>
-      </div>
-    </div>
-
-    <!-- Estatísticas rápidas -->
-    <div style="display:flex; gap:2rem; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border); flex-wrap:wrap;">
-      <div style="text-align:center;">
-        <div style="font-size:1.4rem; font-weight:700; color:var(--green);">{{ inscricoes_count }}</div>
-        <div style="font-size:.78rem; color:var(--text-muted);">Voluntários inscritos</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="font-size:1.4rem; font-weight:700; color:var(--green);">{{ doacoes.count }}</div>
-        <div style="font-size:.78rem; color:var(--text-muted);">Necessidades abertas</div>
-      </div>
-    </div>
-
-    <!-- Ação principal -->
-    <div style="margin-top:1.5rem;">
-      {% if user.is_authenticated %}
-        {% if user.tipo == 'voluntario' %}
-          {% if ja_inscrito %}
-            <span class="btn-filled" style="opacity:.6; cursor:default;">✅ Você já está inscrito</span>
-          {% else %}
-            <a href="{% url 'inscricao' ong.pk %}" class="btn-filled">🙋 Quero me voluntariar</a>
-          {% endif %}
-        {% elif user.tipo == 'ong' %}
-          {% if ong.responsavel == user %}
-            <a href="{% url 'editar_ong' %}" class="btn-filled">✏️ Editar perfil da ONG</a>
-            <a href="{% url 'gerenciar_inscricoes' %}" class="btn-outline" style="margin-left:.5rem;">👥 Gerenciar inscrições</a>
-          {% endif %}
+        {% if form.categorias.errors %}
+          <ul class="errorlist">{% for e in form.categorias.errors %}<li>{{ e }}</li>{% endfor %}</ul>
         {% endif %}
-      {% else %}
-        <a href="{% url 'login' %}?next={% url 'inscricao' ong.pk %}" class="btn-filled">Entrar para se inscrever</a>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- ── NECESSIDADES DE DOAÇÃO ── -->
-  {% if doacoes %}
-  <div class="perfil-card">
-    <h2 class="card-section-title" style="margin-bottom:1.2rem;">🎁 O que esta ONG precisa</h2>
-    <div class="ong-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:1rem;">
-      {% for d in doacoes %}
-      <div style="background:var(--surface-alt); border-radius:var(--radius); padding:1rem; border:1px solid var(--border);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.5rem;">
-          <span class="tag tag-amber">{{ d.get_tipo_display }}</span>
-          {% if d.urgente %}<span class="tag tag-red" style="font-size:.7rem;">🔴 Urgente</span>{% endif %}
-        </div>
-        <p style="font-size:.88rem; color:var(--text-secondary); line-height:1.5; margin:0;">{{ d.descricao }}</p>
-        <p style="font-size:.72rem; color:var(--text-muted); margin-top:.5rem;">{{ d.criada_em|date:"d/m/Y" }}</p>
       </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
 
+      <!-- Urgente -->
+      <div class="form-group" style="display:flex; align-items:center; gap:.75rem; padding:1rem; background:var(--bg2); border-radius:var(--radius); border:1px solid var(--border);">
+        {{ form.urgente }}
+        <div>
+          <label for="{{ form.urgente.id_for_label }}" style="font-weight:600; font-size:.9rem; cursor:pointer;">{{ form.urgente.label }}</label>
+          <p style="font-size:.78rem; color:var(--text-muted); margin:.1rem 0 0;">Exibe um badge 🔴 Urgente no cartão da sua ONG.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:.75rem; margin-top:1.5rem;">
+        <button type="submit" class="btn-filled" style="flex:1;">Salvar alterações</button>
+        <a href="{% url 'perfil' %}" class="btn-outline" style="flex:1; text-align:center; padding:.65rem 1rem;">Cancelar</a>
+      </div>
+    </form>
+
+  </div>
 </div>
 {% endblock %}

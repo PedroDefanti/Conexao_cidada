@@ -63,6 +63,20 @@ class ONG(models.Model):
     localizacao = models.CharField(max_length=200)
     categorias = models.ManyToManyField(Categoria, related_name='ongs')
     emoji = models.CharField(max_length=10, default='🌟')
+
+    # ── Foto da ONG: upload real tem prioridade sobre a URL externa ──
+    foto = models.ImageField(
+        upload_to='fotos_ong/',
+        blank=True, null=True,
+        verbose_name='Foto da ONG',
+        help_text='Upload feito pela própria ONG. Tem prioridade sobre a foto_url.',
+    )
+    foto_url = models.URLField(
+        blank=True,
+        verbose_name='URL de foto (fallback)',
+        help_text='Usada apenas se nenhuma foto tiver sido enviada por upload.',
+    )
+
     ativa = models.BooleanField(default=True)
     urgente = models.BooleanField(default=False)
     criada_em = models.DateTimeField(auto_now_add=True)
@@ -75,6 +89,15 @@ class ONG(models.Model):
 
     def __str__(self):
         return self.nome
+
+    @property
+    def foto_exibicao(self):
+        """Retorna a URL a ser exibida: upload > foto_url > None (cai no emoji)."""
+        if self.foto:
+            return self.foto.url
+        if self.foto_url:
+            return self.foto_url
+        return None
 
 
 class Doacao(models.Model):

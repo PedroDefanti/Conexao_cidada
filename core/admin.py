@@ -55,12 +55,32 @@ class DoacaoInline(admin.TabularInline):
 
 @admin.register(ONG)
 class ONGAdmin(admin.ModelAdmin):
-    list_display   = ('emoji_nome', 'responsavel', 'localizacao', 'urgente', 'ativa', 'criada_em')
+    list_display   = ('preview_foto', 'emoji_nome', 'responsavel', 'localizacao', 'urgente', 'ativa', 'criada_em')
     list_filter    = ('ativa', 'urgente', 'categorias')
     search_fields  = ('nome', 'descricao', 'localizacao', 'responsavel__email')
     filter_horizontal = ('categorias',)
-    readonly_fields   = ('criada_em', 'atualizada_em')
+    readonly_fields   = ('criada_em', 'atualizada_em', 'preview_foto_grande')
     inlines = [InscricaoInline, DoacaoInline]
+
+    fields = (
+        'responsavel', 'nome', 'descricao', 'localizacao', 'emoji',
+        'foto', 'foto_url', 'preview_foto_grande',
+        'categorias', 'ativa', 'urgente', 'criada_em', 'atualizada_em',
+    )
+
+    @admin.display(description='Foto')
+    def preview_foto(self, obj):
+        url = obj.foto_exibicao
+        if url:
+            return format_html('<img src="{}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;">', url)
+        return obj.emoji
+
+    @admin.display(description='Pré-visualização')
+    def preview_foto_grande(self, obj):
+        url = obj.foto_exibicao
+        if url:
+            return format_html('<img src="{}" style="max-width:240px;max-height:160px;border-radius:8px;object-fit:cover;">', url)
+        return '(sem foto — exibindo emoji)'
 
     @admin.display(description='ONG')
     def emoji_nome(self, obj):
@@ -96,7 +116,6 @@ class InscricaoAdmin(admin.ModelAdmin):
     list_filter    = ('status', 'criada_em', 'ong')
     search_fields  = ('usuario__email', 'usuario__first_name', 'ong__nome', 'mensagem')
     readonly_fields = ('criada_em',)
-
 
     @admin.display(description='Status')
     def status_badge(self, obj):

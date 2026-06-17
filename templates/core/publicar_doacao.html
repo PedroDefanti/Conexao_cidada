@@ -8,7 +8,7 @@
     <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.8rem;">
       <div class="card-avatar av-amber" style="width:3rem; height:3rem; font-size:1.5rem; flex-shrink:0;">🎁</div>
       <div>
-        <h1 style="font-size:1.3rem; font-weight:700; margin:0; color:var(--text-primary);">Publicar necessidade de doação</h1>
+        <h1 style="font-size:1.3rem; font-weight:700; margin:0; color:var(--text);">Publicar necessidade de doação</h1>
         <p style="font-size:.85rem; color:var(--text-muted); margin:.2rem 0 0;">{{ ong.emoji }} {{ ong.nome }}</p>
       </div>
     </div>
@@ -42,7 +42,7 @@
       </div>
 
       <!-- Urgente -->
-      <div class="form-group" style="display:flex; align-items:center; gap:.75rem; padding:1rem; background:var(--surface-alt); border-radius:var(--radius); border:1px solid var(--border);">
+      <div class="form-group" style="display:flex; align-items:center; gap:.75rem; padding:1rem; background:var(--bg2); border-radius:var(--radius); border:1px solid var(--border);">
         {{ form.urgente }}
         <div>
           <label for="{{ form.urgente.id_for_label }}" style="font-weight:600; font-size:.9rem; cursor:pointer;">{{ form.urgente.label }}</label>

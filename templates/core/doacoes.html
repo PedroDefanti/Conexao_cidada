@@ -1,13 +1,13 @@
 {% extends 'core/base.html' %}
 {% block title %}Doações - Conexão Cidadã{% endblock %}
-
+ 
 {% block content %}
-
+ 
 <header class="hero">
   <h1>O que as ONGs <span>precisam agora</span></h1>
   <p>Veja as necessidades de doação das organizações e contribua com o que puder.</p>
 </header>
-
+ 
 <!-- Filtros por tipo -->
 <div class="filters">
   <a href="{% url 'doacoes' %}" class="filter-chip {% if not tipo_filtro %}active{% endif %}">Todos</a>
@@ -18,14 +18,14 @@
     </a>
   {% endfor %}
 </div>
-
+ 
 <!-- Botão publicar (só para ONGs) -->
 {% if user.is_authenticated and user.tipo == 'ong' %}
 <div style="text-align:center; margin-bottom:2rem;">
   <a href="{% url 'publicar_doacao' %}" class="btn-filled">+ Publicar necessidade de doação</a>
 </div>
 {% endif %}
-
+ 
 <section class="ongs">
   <h2 class="section-title">
     Necessidades de Doação
@@ -37,8 +37,12 @@
     {% for d in doacoes %}
     <div class="ong-card">
       <div class="card-header">
-        <div class="card-avatar av-amber">🎁</div>
-        <div>
+        {% if d.ong.foto_exibicao %}
+          <img src="{{ d.ong.foto_exibicao }}" class="card-avatar" style="width:48px; height:48px; min-width:48px; flex-shrink:0; object-fit:cover; border-radius:var(--radius);" alt="{{ d.ong.nome }}">
+        {% else %}
+          <div class="card-avatar av-amber">🎁</div>
+        {% endif %}
+        <div style="flex:1; min-width:0;">
           <a href="{% url 'detalhe_ong' d.ong.pk %}" style="text-decoration:none; color:inherit;">
             <div class="card-title">{{ d.ong.nome }}</div>
           </a>
@@ -80,7 +84,7 @@
     </p>
     {% endfor %}
   </div>
-
+ 
   <!-- Paginação -->
   {% if doacoes.has_other_pages %}
   <div style="display:flex; justify-content:center; gap:.5rem; margin-top:2rem; flex-wrap:wrap;">
@@ -96,5 +100,5 @@
   </div>
   {% endif %}
 </section>
-
+ 
 {% endblock %}

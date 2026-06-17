@@ -1,9 +1,9 @@
 {% extends 'core/base.html' %}
 {% load static %}
 {% block title %}Conexão Cidadã - Início{% endblock %}
-
+ 
 {% block content %}
-
+ 
 <!-- ── HERO ── -->
 <header class="hero">
   <div class="hero-badge">🌱 Plataforma de voluntariado</div>
@@ -33,7 +33,7 @@
     </div>
   {% endif %}
 </header>
-
+ 
 <!-- ── FRASES MOTIVACIONAIS ── -->
 <section class="frases-section">
   <div class="frases-track" id="frases-track">
@@ -47,7 +47,7 @@
     <div class="frase-item">"Ninguém pode fazer tudo, mas todos podem fazer algo." — Theodore Roosevelt</div>
   </div>
 </section>
-
+ 
 <!-- ── NÚMEROS DE IMPACTO ── -->
 <section class="impacto">
   <div class="impacto-grid">
@@ -69,7 +69,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- ── BUSCA ── -->
 <div class="search-bar">
   <div class="search-wrap">
@@ -77,7 +77,7 @@
     <button type="button" id="btn-buscar">Buscar</button>
   </div>
 </div>
-
+ 
 <!-- ── FILTROS ── -->
 <div class="filters">
   <button class="filter-chip active" data-filter="Todas">Todas</button>
@@ -85,7 +85,7 @@
   <button class="filter-chip" data-filter="{{ cat.nome }}">{{ cat.nome }}</button>
   {% endfor %}
 </div>
-
+ 
 <!-- ── GRID DE ONGS ── -->
 <section class="ongs">
   <h2 class="section-title">Organizações Disponíveis</h2>
@@ -93,8 +93,12 @@
     {% for ong in ongs %}
     <div class="ong-card" data-category="{{ ong.categorias.first.nome|default:'' }}" data-name="{{ ong.nome|lower }}" data-desc="{{ ong.descricao|lower }}">
       <div class="card-header">
-        <div class="card-avatar av-green">{{ ong.emoji }}</div>
-        <div>
+        {% if ong.foto_exibicao %}
+          <img src="{{ ong.foto_exibicao }}" class="card-avatar" style="width:48px; height:48px; min-width:48px; flex-shrink:0; object-fit:cover; border-radius:var(--radius);" alt="{{ ong.nome }}">
+        {% else %}
+          <div class="card-avatar av-green">{{ ong.emoji }}</div>
+        {% endif %}
+        <div style="flex:1; min-width:0;">
           <a href="{% url 'detalhe_ong' ong.pk %}" style="text-decoration:none; color:inherit;">
             <div class="card-title">{{ ong.nome }}</div>
           </a>
@@ -127,7 +131,7 @@
     <p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:2rem 0;">Nenhuma ONG cadastrada ainda.</p>
     {% endfor %}
   </div>
-
+ 
   <!-- Paginação -->
   {% if ongs.has_other_pages %}
   <div style="display:flex; justify-content:center; gap:.5rem; margin-top:2rem; flex-wrap:wrap;">
@@ -147,7 +151,7 @@
   </div>
   {% endif %}
 </section>
-
+ 
 <!-- ── ONGS PARCEIRAS ── -->
 <section class="parceiras">
   <h2 class="section-title">🤝 ONGs Parceiras</h2>
@@ -163,7 +167,7 @@
     <div class="parceira-card"><div class="parceira-emoji">🏗️</div><div class="parceira-nome">Reconstruir</div><div class="parceira-causa">Moradia para famílias em risco</div></div>
   </div>
 </section>
-
+ 
 {% if not user.is_authenticated %}
 <section class="cta-final">
   <h2>Pronto para fazer a diferença?</h2>
@@ -171,14 +175,14 @@
   <a href="{% url 'cadastro' %}" class="btn-filled" style="padding:.75rem 2rem; font-size:1rem;">Criar conta gratuita →</a>
 </section>
 {% endif %}
-
+ 
 {% endblock %}
-
+ 
 {% block extra_js %}
 <script>
   const chips = document.querySelectorAll('.filter-chip');
   const cards = document.querySelectorAll('.ong-card');
-
+ 
   function applyFilters() {
     const query  = document.getElementById('search-input').value.trim().toLowerCase();
     const active = document.querySelector('.filter-chip.active').dataset.filter;
@@ -188,7 +192,7 @@
       card.style.display = (matchCat && matchSearch) ? 'flex' : 'none';
     });
   }
-
+ 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       chips.forEach(c => c.classList.remove('active'));
@@ -196,10 +200,10 @@
       applyFilters();
     });
   });
-
+ 
   document.getElementById('search-input').addEventListener('input', applyFilters);
   document.getElementById('btn-buscar').addEventListener('click', applyFilters);
-
+ 
   // Carrossel de frases
   const track = document.getElementById('frases-track');
   let pos = 0;
